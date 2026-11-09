@@ -2,11 +2,22 @@
 
 All options are URL query parameters on `/api/heatmap`. Invalid values produce an error card that names the problem.
 
+## Defaults from environment variables
+
+Every option can also be set once for the whole deployment with an environment variable, so the URL can stay short. The name is `DEFAULT_` plus the option in capitals, with two exceptions: `db` → `DEFAULT_DATABASE`, `tz` → `DEFAULT_TIMEZONE`. For example `weeks` → `DEFAULT_WEEKS`, `hide_legend` → `DEFAULT_HIDE_LEGEND`, `cache_seconds` → `DEFAULT_CACHE_SECONDS`.
+
+- A value in the URL always wins over the environment (`&hide_legend=false` turns off `DEFAULT_HIDE_LEGEND=true`).
+- `DEFAULT_FILTER` takes several filters separated by `;` (`Status:Done;Tag:!Archive`). Any `filter` in the URL replaces all of them.
+- Bad values are reported the same way as bad URL values.
+- After changing a variable on Vercel, redeploy for it to take effect.
+
+With `DEFAULT_DATABASE` and `DEFAULT_FORMAT=html` set, the whole Notion embed URL is `https://<app>.vercel.app/api/heatmap`. You can still point the same deployment at another database with `?db=`.
+
 ## Data
 
 | Parameter | Default | Description |
 |---|---|---|
-| `db` | required | Database ID (32 hex, with or without dashes) or a full Notion link. `?v=` view IDs in links are ignored. A data source ID also works. |
+| `db` | required (or `DEFAULT_DATABASE`) | Database ID (32 hex, with or without dashes) or a full Notion link. `?v=` view IDs in links are ignored. A data source ID also works. |
 | `date` | `created_time` | Which day an item belongs to. `created_time`, `last_edited_time`, or the **name** of a Date, Created time, Last edited time, date Formula or date Rollup property. Date-only values are used as written; timestamps are converted with `tz`. |
 | `mode` | `presence` | `presence`: any item that day fills the cell with the strongest colour. `count`: number of items. `sum:<property>`: adds a Number (or number Formula/Rollup) property. `checkbox:<property>`: counts items whose checkbox is ticked. `count` and `sum` use four shades relative to the busiest visible day. |
 | `filter` | | `<property>:<value>` keeps matching items; `<property>:!<value>` drops them. Repeat to combine (AND). Case-insensitive. Works with title, text, select, status, multi-select (any option), checkbox (`true`/`false`), number, url, email, phone and formula. |

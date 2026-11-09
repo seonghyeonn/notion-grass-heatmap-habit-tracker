@@ -57,7 +57,7 @@
 
 ## 옵션
 
-필수 옵션은 `db` 하나뿐입니다.
+필수 옵션은 `db` 하나뿐이고, 이것도 `DEFAULT_DATABASE` 환경 변수로 대신할 수 있습니다.
 
 | 파라미터 | 설명 | 예시 |
 | :-- | :-- | :-- |
@@ -79,6 +79,21 @@
 | `cache_seconds` | CDN 캐시 시간, 300~86400 (기본: `1800`) | `3600` |
 
 테마 색이 먼저 적용되고, 색 옵션을 주면 그 값으로 덮어씁니다. 옵션별 자세한 설명은 [docs/options.md](docs/options.md)에 있습니다.
+
+### 주소 대신 환경 변수로 한 번에 설정하기
+
+모든 옵션은 Vercel 환경 변수로도 정할 수 있습니다. 이름은 `DEFAULT_` 뒤에 옵션 이름을 대문자로 붙이면 됩니다 (`weeks` → `DEFAULT_WEEKS`). 예외는 `db` → `DEFAULT_DATABASE`, `tz` → `DEFAULT_TIMEZONE` 두 개입니다. `DEFAULT_FILTER`에 필터를 여러 개 넣을 때는 `;`로 구분합니다. 주소에 값을 넣으면 그 값이 우선합니다.
+
+```
+DEFAULT_DATABASE=<데이터베이스 링크>
+DEFAULT_FORMAT=html
+DEFAULT_TIMEZONE=Asia/Seoul
+DEFAULT_LOCALE=ko
+DEFAULT_WEEKS=26
+DEFAULT_TITLE=메모 기록
+```
+
+이렇게 넣으면 노션 임베드 주소는 `https://<내-앱>.vercel.app/api/heatmap` 하나면 됩니다. 환경 변수를 바꾼 뒤에는 다시 배포(Redeploy)해야 적용됩니다. 전체 목록은 [.env.example](.env.example)에 있습니다.
 
 ## 날짜와 연속 기록 계산 방식
 
@@ -103,7 +118,7 @@ Vercel이 가장 간단합니다. 앱 전체가 `api/index.ts` 함수 하나로 
 3. 환경 변수를 넣습니다.
    - `NOTION_TOKEN`: 통합 시크릿 (필수)
    - `ALLOWED_DATABASES`: 이 배포가 읽을 수 있는 데이터베이스 ID, 쉼표로 구분 (권장)
-   - `DEFAULT_TIMEZONE`, `DEFAULT_LOCALE`, `DEFAULT_THEME`: 기본값 (선택)
+   - `DEFAULT_*`: 모든 옵션의 기본값 (선택). 예: `DEFAULT_DATABASE`, `DEFAULT_TIMEZONE`, `DEFAULT_WEEKS` ([전체 목록](.env.example))
 4. 배포한 뒤 `/api/status`에서 토큰이 연결됐는지 확인합니다.
 
 </details>

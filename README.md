@@ -57,7 +57,7 @@ There is no public instance. You deploy your own copy to Vercel (free for person
 
 ## Options
 
-`db` is the only required option.
+`db` is the only required option, and `DEFAULT_DATABASE` can stand in for it.
 
 | Parameter | Details | Example |
 | :-- | :-- | :-- |
@@ -79,6 +79,20 @@ There is no public instance. You deploy your own copy to Vercel (free for person
 | `cache_seconds` | CDN cache time, 300 to 86400 (default: `1800`) | `3600` |
 
 Theme colors are applied first and any color option overrides them. Details for each option are in [docs/options.md](docs/options.md).
+
+### Set defaults once instead of in every URL
+
+Every option can be an environment variable on Vercel: `DEFAULT_` plus the option name in capitals (`weeks` → `DEFAULT_WEEKS`), except `db` → `DEFAULT_DATABASE` and `tz` → `DEFAULT_TIMEZONE`. Several `DEFAULT_FILTER` values are separated with `;`. A value in the URL still wins.
+
+```
+DEFAULT_DATABASE=<database link>
+DEFAULT_FORMAT=html
+DEFAULT_TIMEZONE=Asia/Seoul
+DEFAULT_WEEKS=26
+DEFAULT_TITLE=Memos
+```
+
+With these set, the Notion embed URL is just `https://<your-app>.vercel.app/api/heatmap`. Redeploy after changing a variable. The full list is in [.env.example](.env.example).
 
 ## How days and streaks are counted
 
@@ -103,7 +117,7 @@ Vercel is the easiest option. The whole app is one function in `api/index.ts`.
 3. Add environment variables:
    - `NOTION_TOKEN`: your integration secret (required)
    - `ALLOWED_DATABASES`: comma-separated database IDs this deployment may read (recommended)
-   - `DEFAULT_TIMEZONE`, `DEFAULT_LOCALE`, `DEFAULT_THEME`: optional defaults
+   - `DEFAULT_*`: optional defaults for any option, such as `DEFAULT_DATABASE`, `DEFAULT_TIMEZONE`, `DEFAULT_WEEKS` ([list](.env.example))
 4. Deploy and open `/api/status` to check the token.
 
 </details>

@@ -16,11 +16,16 @@ import {
 
 const TRUE = new Set(["1", "true", "yes", "on"]);
 
-export function parseOptions(params: URLSearchParams, env: Env): HeatmapOptions {
-  const read = (name: string) => params.get(name)?.trim() || undefined;
+/** Reads one option: the URL wins, then the deployment's DEFAULT_* variable. */
+type Read = (name: string) => string | undefined;
 
-  const rawDb = read("db") ?? read("database");
-  if (!rawDb) throw new OptionError("Missing `db` parameter.", "Pass a Notion database ID or URL as ?db=");
+export function parseOptions(params: URLSearchParams, env: Env): HeatmapOptions {
+  const read: Read = (name) => params.get(name)?.trim() || env.defaults[name];
+
+  const rawDb = params.get("db")?.trim() || params.get("database")?.trim() || env.defaults.db;
+  if (!rawDb) {
+    throw new OptionError("Missing `db` parameter.", "Pass a Notion database ID or URL as ?db=, or set DEFAULT_DATABASE.");
+  }
   const databaseId = normalizeNotionId(rawDb);
   if (!databaseId) throw new OptionError("`db` is not a valid Notion ID.", "Copy the database link and paste it as ?db=");
 
@@ -42,24 +47,24 @@ export function parseOptions(params: URLSearchParams, env: Env): HeatmapOptions 
     databaseId,
     dateField: parseDateField(read("date")),
     mode: parseMode(read("mode")),
-    filters: params.getAll("filter").map(parseFilter),
-    weeks: int(params, "weeks", LIMITS.weeks),
+    filters: parseFilters(params, env),
+    weeks: int(read, "weeks", LIMITS.weeks),
     weekStart,
     timeZone,
     locale: parseLocale(read("locale") ?? env.defaultLocale),
     theme: themeName,
-    colors: parseColors(params),
+    colors: parseColors(read),
     title: read("title"),
-    hideTitle: flag(params, "hide_title"),
-    hideStats: flag(params, "hide_stats"),
-    hideLegend: flag(params, "hide_legend"),
-    hideLabels: flag(params, "hide_labels"),
-    hideBorder: flag(params, "hide_border"),
-    cellSize: int(params, "cell", LIMITS.cellSize),
-    gap: int(params, "gap", LIMITS.gap),
-    radius: int(params, "radius", LIMITS.radius),
+    hideTitle: flag(read, "hide_title"),
+    hideStats: flag(read, "hide_stats"),
+    hideLegend: flag(read, "hide_legend"),
+    hideLabels: flag(read, "hide_labels"),
+    hideBorder: flag(read, "hide_border"),
+    cellSize: int(read, "cell", LIMITS.cellSize),
+    gap: int(read, "gap", LIMITS.gap),
+    radius: int(read, "radius", LIMITS.radius),
     format,
-    cacheSeconds: int(params, "cache_seconds", LIMITS.cacheSeconds, { clamp: true }),
+    cacheSeconds: int(read, "cache_seconds", LIMITS.cacheSeconds, { clamp: true }),
   };
 }
 
@@ -79,6 +84,13 @@ function parseMode(value: string | undefined): ValueMode {
   throw new OptionError(`Unknown mode "${value}".`, "Use presence, count, sum:<property> or checkbox:<property>.");
 }
 
+/** URL filters replace the default ones; DEFAULT_FILTER separates several with `;`. */
+function parseFilters(params: URLSearchParams, env: Env): FilterRule[] {
+  const fromUrl = params.getAll("filter").map((raw) => raw.trim()).filter(Boolean);
+  const raws = fromUrl.length > 0 ? fromUrl : (env.defaults.filter ?? "").split(";").map((raw) => raw.trim()).filter(Boolean);
+  return raws.map(parseFilter);
+}
+
 /** "<property>:<value>" matches, "<property>:!<value>" excludes. */
 function parseFilter(raw: string): FilterRule {
   const index = raw.indexOf(":");
@@ -95,10 +107,10 @@ function parseLocale(value: string): Locale {
   throw new OptionError(`Unsupported locale "${value}".`, "Use en or ko.");
 }
 
-function parseColors(params: URLSearchParams): HeatmapOptions["colors"] {
+function parseColors(read: Read): HeatmapOptions["colors"] {
   const colors: HeatmapOptions["colors"] = {};
   const color = (name: string) => {
-    const value = params.get(name)?.trim();
+    const value = read(name);
     if (!value) return undefined;
     if (!isHexColor(value)) throw new OptionError(`\`${name}\` must be a hex colour like 2ea043.`);
     return toHex(value);
@@ -112,18 +124,18 @@ function parseColors(params: URLSearchParams): HeatmapOptions["colors"] {
   return colors;
 }
 
-function flag(params: URLSearchParams, name: string): boolean {
-  return TRUE.has((params.get(name) ?? "").toLowerCase());
+function flag(read: Read, name: string): boolean {
+  return TRUE.has((read(name) ?? "").toLowerCase());
 }
 
 function int(
-  params: URLSearchParams,
+  read: Read,
   name: string,
   limits: { min: number; max: number; default: number },
   { clamp = false } = {},
 ): number {
-  const raw = params.get(name);
-  if (raw === null || raw.trim() === "") return limits.default;
+  const raw = read(name);
+  if (raw === undefined) return limits.default;
   const value = Number(raw);
   if (!Number.isInteger(value)) throw new OptionError(`\`${name}\` must be a whole number.`);
   if (clamp) return Math.min(limits.max, Math.max(limits.min, value));

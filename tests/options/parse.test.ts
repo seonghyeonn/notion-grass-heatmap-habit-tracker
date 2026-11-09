@@ -78,4 +78,45 @@ describe("parseOptions", () => {
     assert.equal(o.locale, "ko");
     assert.equal(o.theme, "ocean");
   });
+
+  it("takes every option from DEFAULT_* variables, so the URL can be empty", () => {
+    const custom = readEnv({
+      DEFAULT_DATABASE: `https://www.notion.so/ws/Memo-${ID}`,
+      DEFAULT_WEEKS: "26",
+      DEFAULT_TITLE: "메모 기록",
+      DEFAULT_FORMAT: "html",
+      DEFAULT_MODE: "checkbox:운동",
+      DEFAULT_FILTER: "상태:완료; 분야:!소설",
+      DEFAULT_HIDE_LEGEND: "true",
+      DEFAULT_CELL: "14",
+      DEFAULT_BG: "191919",
+    });
+    const o = parseOptions(new URLSearchParams(""), custom);
+    assert.equal(o.databaseId, DASHED);
+    assert.equal(o.weeks, 26);
+    assert.equal(o.title, "메모 기록");
+    assert.equal(o.format, "html");
+    assert.deepEqual(o.mode, { kind: "checkbox", property: "운동" });
+    assert.deepEqual(o.filters, [
+      { property: "상태", value: "완료", negate: false },
+      { property: "분야", value: "소설", negate: true },
+    ]);
+    assert.ok(o.hideLegend);
+    assert.equal(o.cellSize, 14);
+    assert.equal(o.colors.bg, "#191919");
+  });
+
+  it("lets the URL override environment defaults", () => {
+    const custom = readEnv({ DEFAULT_DATABASE: ID, DEFAULT_WEEKS: "26", DEFAULT_HIDE_LEGEND: "true", DEFAULT_FILTER: "상태:완료" });
+    const other = "0123456789abcdef0123456789abcdef";
+    const o = parseOptions(new URLSearchParams(`db=${other}&weeks=13&hide_legend=false&filter=분야:독서`), custom);
+    assert.equal(o.databaseId, normalizeNotionId(other));
+    assert.equal(o.weeks, 13);
+    assert.equal(o.hideLegend, false);
+    assert.deepEqual(o.filters, [{ property: "분야", value: "독서", negate: false }]);
+  });
+
+  it("rejects bad environment defaults like bad URL values", () => {
+    assert.throws(() => parseOptions(new URLSearchParams(`db=${ID}`), readEnv({ DEFAULT_WEEKS: "99" })), OptionError);
+  });
 });

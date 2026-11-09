@@ -13,6 +13,7 @@
 | `DEFAULT_TIMEZONE` | no | e.g. `Asia/Seoul`. Used when a request has no `tz`. |
 | `DEFAULT_LOCALE` | no | `en` or `ko`. |
 | `DEFAULT_THEME` | no | Any theme name or `auto`. |
+| `DEFAULT_DATABASE`, `DEFAULT_FORMAT`, `DEFAULT_WEEKS`, … | no | A default for any URL option. See [options.md](options.md#defaults-from-environment-variables). |
 | `MAX_ROWS` | no | Upper bound of rows read per request (default 5000). |
 
 4. Deploy, then open `/api/status`. You should see `"ok": true` and your integration name.

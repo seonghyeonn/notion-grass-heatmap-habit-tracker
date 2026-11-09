@@ -28,6 +28,8 @@
 3. 아래 버튼으로 배포합니다. Vercel이 환경 변수를 물어보면 이렇게 넣습니다.
    - `NOTION_TOKEN`: 1번에서 복사한 시크릿
    - `DEFAULT_DATABASE`, `ALLOWED_DATABASES`: 데이터베이스 링크 (둘 다 같은 링크)
+   - `DEFAULT_TITLE`: 카드 제목 (미리 채운 값: `활동 기록`). 예: `메모 기록`
+   - `DEFAULT_THEME`: 색 테마 (미리 채운 값: `auto`, 노션 라이트/다크 자동). [전체 테마](docs/themes.md)
    - `DEFAULT_FORMAT`, `DEFAULT_TIMEZONE`, `DEFAULT_LOCALE`: 미리 채워져 있으니 그대로 둡니다
 
    [![Deploy with Vercel](https://vercel.com/button)][vercel-deploy]
@@ -124,6 +126,8 @@ Vercel이 가장 간단합니다. 앱 전체가 `api/index.ts` 함수 하나로 
    NOTION_TOKEN=<노션 연결 시크릿>
    DEFAULT_DATABASE=<데이터베이스 링크>
    ALLOWED_DATABASES=<데이터베이스 링크>
+   DEFAULT_TITLE=활동 기록
+   DEFAULT_THEME=auto
    DEFAULT_FORMAT=html
    DEFAULT_TIMEZONE=Asia/Seoul
    DEFAULT_LOCALE=ko
@@ -163,4 +167,4 @@ npx vercel dev
 
 [MIT](LICENSE). 개인 프로젝트이며 Notion Labs나 GitHub와는 관련이 없습니다.
 
-[vercel-deploy]: https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fseonghyeonn%2Fnotion-grass-heatmap-habit-tracker&env=NOTION_TOKEN%2CDEFAULT_DATABASE%2CALLOWED_DATABASES%2CDEFAULT_FORMAT%2CDEFAULT_TIMEZONE%2CDEFAULT_LOCALE&envDefaults=%7B%22DEFAULT_FORMAT%22%3A%22html%22%2C%22DEFAULT_TIMEZONE%22%3A%22Asia%2FSeoul%22%2C%22DEFAULT_LOCALE%22%3A%22ko%22%7D&envDescription=NOTION_TOKEN%3A%20%EB%85%B8%EC%85%98%20%EC%97%B0%EA%B2%B0%20%EC%8B%9C%ED%81%AC%EB%A6%BF.%20DEFAULT_DATABASE%EC%99%80%20ALLOWED_DATABASES%3A%20%EB%8D%B0%EC%9D%B4%ED%84%B0%EB%B2%A0%EC%9D%B4%EC%8A%A4%20%EB%A7%81%ED%81%AC%EB%A5%BC%20%EB%91%98%20%EB%8B%A4%20%EB%B6%99%EC%97%AC%20%EB%84%A3%EA%B8%B0.%20%EB%82%98%EB%A8%B8%EC%A7%80%EB%8A%94%20%EB%AF%B8%EB%A6%AC%20%EC%B1%84%EC%9B%8C%EC%A0%B8%20%EC%9E%88%EC%96%B4%EC%9A%94.&envLink=https%3A%2F%2Fgithub.com%2Fseonghyeonn%2Fnotion-grass-heatmap-habit-tracker%2Fblob%2Fmain%2Fdocs%2Fdeploy.md&project-name=notion-grass-heatmap
+[vercel-deploy]: https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fseonghyeonn%2Fnotion-grass-heatmap-habit-tracker&env=NOTION_TOKEN%2CDEFAULT_DATABASE%2CALLOWED_DATABASES%2CDEFAULT_TITLE%2CDEFAULT_THEME%2CDEFAULT_FORMAT%2CDEFAULT_TIMEZONE%2CDEFAULT_LOCALE&envDefaults=%7B%22DEFAULT_TITLE%22%3A%22%ED%99%9C%EB%8F%99%20%EA%B8%B0%EB%A1%9D%22%2C%22DEFAULT_THEME%22%3A%22auto%22%2C%22DEFAULT_FORMAT%22%3A%22html%22%2C%22DEFAULT_TIMEZONE%22%3A%22Asia%2FSeoul%22%2C%22DEFAULT_LOCALE%22%3A%22ko%22%7D&envDescription=NOTION_TOKEN%3A%20%EB%85%B8%EC%85%98%20%EC%97%B0%EA%B2%B0%20%EC%8B%9C%ED%81%AC%EB%A6%BF.%20DEFAULT_DATABASE%EC%99%80%20ALLOWED_DATABASES%3A%20%EB%8D%B0%EC%9D%B4%ED%84%B0%EB%B2%A0%EC%9D%B4%EC%8A%A4%20%EB%A7%81%ED%81%AC%EB%A5%BC%20%EB%91%98%20%EB%8B%A4%20%EB%B6%99%EC%97%AC%20%EB%84%A3%EA%B8%B0.%20%EB%82%98%EB%A8%B8%EC%A7%80%EB%8A%94%20%EB%AF%B8%EB%A6%AC%20%EC%B1%84%EC%9B%8C%EC%A0%B8%20%EC%9E%88%EA%B3%A0%2C%20%EC%A0%9C%EB%AA%A9%EA%B3%BC%20%ED%85%8C%EB%A7%88%EB%8A%94%20%EC%9B%90%ED%95%98%EB%8A%94%20%EB%8C%80%EB%A1%9C%20%EB%B0%94%EA%BE%B8%EC%84%B8%EC%9A%94.&envLink=https%3A%2F%2Fgithub.com%2Fseonghyeonn%2Fnotion-grass-heatmap-habit-tracker%2Fblob%2Fmain%2Fdocs%2Fdeploy.md&project-name=notion-grass-heatmap

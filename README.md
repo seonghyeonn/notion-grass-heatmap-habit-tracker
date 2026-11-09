@@ -28,6 +28,8 @@ There is no public instance. You deploy your own copy to Vercel (free for person
 3. Deploy with the button below. When Vercel asks for environment variables:
    - `NOTION_TOKEN`: the secret from step 1
    - `DEFAULT_DATABASE`, `ALLOWED_DATABASES`: your database link (the same link in both)
+   - `DEFAULT_TITLE`: card title (prefilled: `Activity`), e.g. `Memos`
+   - `DEFAULT_THEME`: color theme (prefilled: `auto`, Notion light/dark). [All themes](docs/themes.md)
    - `DEFAULT_FORMAT`, `DEFAULT_TIMEZONE`, `DEFAULT_LOCALE`: prefilled; change the time zone if you like
 
    [![Deploy with Vercel](https://vercel.com/button)][vercel-deploy]
@@ -123,6 +125,8 @@ Vercel is the easiest option. The whole app is one function in `api/index.ts`.
    NOTION_TOKEN=<Notion connection secret>
    DEFAULT_DATABASE=<database link>
    ALLOWED_DATABASES=<database link>
+   DEFAULT_TITLE=Activity
+   DEFAULT_THEME=auto
    DEFAULT_FORMAT=html
    DEFAULT_TIMEZONE=UTC
    DEFAULT_LOCALE=en
@@ -162,4 +166,4 @@ If this is useful to you, a star helps other people find it.
 
 [MIT](LICENSE). This is a personal project and is not affiliated with Notion Labs or GitHub.
 
-[vercel-deploy]: https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fseonghyeonn%2Fnotion-grass-heatmap-habit-tracker&env=NOTION_TOKEN%2CDEFAULT_DATABASE%2CALLOWED_DATABASES%2CDEFAULT_FORMAT%2CDEFAULT_TIMEZONE%2CDEFAULT_LOCALE&envDefaults=%7B%22DEFAULT_FORMAT%22%3A%22html%22%2C%22DEFAULT_TIMEZONE%22%3A%22UTC%22%2C%22DEFAULT_LOCALE%22%3A%22en%22%7D&envDescription=NOTION_TOKEN%3A%20your%20Notion%20connection%20secret.%20DEFAULT_DATABASE%20and%20ALLOWED_DATABASES%3A%20paste%20your%20database%20link%20into%20both.%20The%20rest%20is%20prefilled.&envLink=https%3A%2F%2Fgithub.com%2Fseonghyeonn%2Fnotion-grass-heatmap-habit-tracker%2Fblob%2Fmain%2Fdocs%2Fdeploy.md&project-name=notion-grass-heatmap
+[vercel-deploy]: https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fseonghyeonn%2Fnotion-grass-heatmap-habit-tracker&env=NOTION_TOKEN%2CDEFAULT_DATABASE%2CALLOWED_DATABASES%2CDEFAULT_TITLE%2CDEFAULT_THEME%2CDEFAULT_FORMAT%2CDEFAULT_TIMEZONE%2CDEFAULT_LOCALE&envDefaults=%7B%22DEFAULT_TITLE%22%3A%22Activity%22%2C%22DEFAULT_THEME%22%3A%22auto%22%2C%22DEFAULT_FORMAT%22%3A%22html%22%2C%22DEFAULT_TIMEZONE%22%3A%22UTC%22%2C%22DEFAULT_LOCALE%22%3A%22en%22%7D&envDescription=NOTION_TOKEN%3A%20your%20Notion%20connection%20secret.%20DEFAULT_DATABASE%20and%20ALLOWED_DATABASES%3A%20paste%20your%20database%20link%20into%20both.%20The%20rest%20is%20prefilled%3B%20change%20the%20title%20and%20theme%20as%20you%20like.&envLink=https%3A%2F%2Fgithub.com%2Fseonghyeonn%2Fnotion-grass-heatmap-habit-tracker%2Fblob%2Fmain%2Fdocs%2Fdeploy.md&project-name=notion-grass-heatmap

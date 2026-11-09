@@ -8,15 +8,16 @@
 
 | Name | Required | Description |
 |---|---|---|
-| `NOTION_TOKEN` | yes | Internal integration secret (`ntn_…`). Read content permission is enough. |
-| `ALLOWED_DATABASES` | recommended | Comma-separated database IDs or links this deployment may read. Empty = any database shared with the integration. |
+| `NOTION_TOKEN` | yes | API token of a Notion connection (`ntn_…`), created under Developer tools > Connections with the **API token** method. Read content is the only capability needed; choose *No user information*. |
+| `DEFAULT_DATABASE` | recommended | Database link or ID used when the URL has no `db`. Also locks the deployment to this database unless `ALLOWED_DATABASES` says otherwise. |
+| `ALLOWED_DATABASES` | no | Extra databases (comma-separated links or IDs) this deployment may read, on top of `DEFAULT_DATABASE`. `*` allows any database shared with the connection. When both this and `DEFAULT_DATABASE` are empty, any shared database can be read. |
 | `DEFAULT_TIMEZONE` | no | e.g. `Asia/Seoul`. Used when a request has no `tz`. |
 | `DEFAULT_LOCALE` | no | `en` or `ko`. |
 | `DEFAULT_THEME` | no | Any theme name or `auto`. |
-| `DEFAULT_DATABASE`, `DEFAULT_FORMAT`, `DEFAULT_WEEKS`, … | no | A default for any URL option. See [options.md](options.md#defaults-from-environment-variables). |
+| `DEFAULT_FORMAT`, `DEFAULT_TITLE`, `DEFAULT_WEEKS`, … | no | A default for any URL option. See [options.md](options.md#defaults-from-environment-variables). |
 | `MAX_ROWS` | no | Upper bound of rows read per request (default 5000). |
 
-4. Deploy, then open `/api/status`. You should see `"ok": true` and your integration name.
+4. Deploy, then open `/api/status`. You should see `"ok": true`, your connection name, and `allowList` set to `default database only` or `on`.
 
 ### How it runs
 
@@ -26,13 +27,13 @@
 
 ## Notion side
 
-- The database must be shared with the integration (`•••` → *Connections*). Otherwise you will see `notion_object_not_found`.
+- The database must be shared with the connection (`•••` → *Connections*). Otherwise you will see `notion_object_not_found`.
 - Notion API version `2025-09-03` is used. A database link resolves to its first data source. For databases with several data sources, pass the data source ID as `db`.
 - Rows are read newest first. When the date is `created_time` or `last_edited_time`, only the visible window is requested from Notion. For property dates every row is read up to `MAX_ROWS`.
 
 ## Embedding in Notion
 
-`/embed` → paste `https://<app>.vercel.app/api/heatmap?db=…&format=html`.
+`/embed` → paste `https://<app>.vercel.app/api/heatmap` (with `DEFAULT_DATABASE` and `DEFAULT_FORMAT=html` set), or `https://<app>.vercel.app/api/heatmap?db=…&format=html`.
 
 - `format=html` scales to the block and scrolls to the latest week on phones.
 - `theme=auto` follows the **viewer's operating system** colour scheme, not Notion's own theme switch. If you always use Notion in dark mode, choose `theme=notion-dark` explicitly.
@@ -44,7 +45,7 @@
 |---|---|
 | `NOTION_TOKEN is not set` | Add the variable and redeploy. |
 | `notion_unauthorized` | Token is wrong or was regenerated. |
-| `notion_object_not_found` | Share the database with the integration. |
-| `This database is not enabled on this deployment` | Add it to `ALLOWED_DATABASES`. |
+| `notion_object_not_found` | Share the database with the connection. |
+| `This database is not enabled on this deployment` | The deployment is locked to `DEFAULT_DATABASE`. Add the other database to `ALLOWED_DATABASES`, or set it to `*`. |
 | `Property "X" was not found` | Property names are case- and space-sensitive; the card lists the available ones. |
 | `notion_rate_limited` | Raise `cache_seconds`; Notion allows about three requests per second per integration. |

@@ -62,6 +62,20 @@ describe("GET /api/heatmap", () => {
     assert.equal(res.headers.get("x-error-status"), "403");
   });
 
+  it("locks to DEFAULT_DATABASE when no allow-list is set", async () => {
+    const other = "11111111111111111111111111111111";
+    const locked = handler({ NOTION_TOKEN: "x", DEFAULT_DATABASE: `https://www.notion.so/ws/Memo-${ID}` });
+    assert.equal((await get(locked, "")).headers.get("x-error-status"), null, "default database is allowed");
+    assert.equal((await get(locked, `db=${other}`)).headers.get("x-error-status"), "403");
+
+    const listed = handler({ NOTION_TOKEN: "x", DEFAULT_DATABASE: ID, ALLOWED_DATABASES: other });
+    assert.equal((await get(listed, "")).headers.get("x-error-status"), null, "default is added to the list");
+    assert.equal((await get(listed, `db=${other}`)).headers.get("x-error-status"), null);
+
+    const open = handler({ NOTION_TOKEN: "x", DEFAULT_DATABASE: ID, ALLOWED_DATABASES: "*" });
+    assert.equal((await get(open, `db=${other}`)).headers.get("x-error-status"), null, "* allows any");
+  });
+
   it("explains a missing token", async () => {
     const h = createHeatmapHandler({ env: readEnv({}), now });
     const res = await get(h, `db=${ID}&locale=ko`);

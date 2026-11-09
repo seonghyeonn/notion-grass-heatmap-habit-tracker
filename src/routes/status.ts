@@ -1,3 +1,4 @@
+import { allowListLabel } from "../common/access.js";
 import { DEFAULT_ENV_NAMES, type Env } from "../common/env.js";
 import { AppError } from "../common/errors.js";
 import { respond } from "../common/http.js";
@@ -11,7 +12,7 @@ export function createStatusHandler(env: Env, fetchImpl: typeof fetch = fetch) {
       name: PACKAGE.name,
       version: PACKAGE.version,
       tokenConfigured: Boolean(env.notionToken),
-      allowList: env.allowedDatabases.length > 0 ? "on" : "off",
+      allowList: allowListLabel(env),
       usage: env.defaults.db
         ? "/api/heatmap (uses DEFAULT_DATABASE; add ?db=<notion database id or url> for another database)"
         : "/api/heatmap?db=<notion database id or url>, or set DEFAULT_DATABASE to use just /api/heatmap",

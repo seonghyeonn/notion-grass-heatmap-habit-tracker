@@ -23,11 +23,15 @@
 
 ## 빠른 설정
 
-1. [notion.so/profile/integrations](https://www.notion.so/profile/integrations)에서 Internal 통합을 만들고 **콘텐츠 읽기** 권한만 켠 뒤 시크릿을 복사합니다.
-2. 노션에서 데이터베이스를 열고 `•••` > 연결(Connections)에서 통합을 추가합니다.
+1. 노션 연결(Connection)을 만듭니다.
+   - [notion.so/profile/integrations](https://www.notion.so/profile/integrations)를 열면 **Developer tools > Connections** 화면이 나옵니다. **New connection**을 누릅니다.
+   - Authentication method는 **API token**을 고릅니다. OAuth는 필요 없습니다.
+   - Capabilities에서 **Read content**만 켜고 나머지는 모두 끕니다. User capabilities는 **No user information**을 고릅니다. 이 앱은 읽기만 하므로 토큰이 새더라도 노션 내용을 바꿀 수 없습니다.
+   - `ntn_`으로 시작하는 **API token**을 복사합니다.
+2. 노션에서 잔디로 볼 데이터베이스를 열고 오른쪽 위 `•••` > **연결(Connections)**에서 방금 만든 연결을 추가합니다. 그다음 같은 메뉴에서 **링크 복사**를 합니다. 이 단계를 빠뜨리면 "데이터베이스를 찾을 수 없다"는 오류 카드가 나옵니다.
 3. 아래 버튼으로 배포합니다. Vercel이 환경 변수를 물어보면 이렇게 넣습니다.
-   - `NOTION_TOKEN`: 1번에서 복사한 시크릿
-   - `DEFAULT_DATABASE`, `ALLOWED_DATABASES`: 데이터베이스 링크 (둘 다 같은 링크)
+   - `NOTION_TOKEN`: 1번에서 복사한 API 토큰
+   - `DEFAULT_DATABASE`: 2번에서 복사한 데이터베이스 링크. 이 데이터베이스만 읽을 수 있게 자동으로 잠깁니다.
    - `DEFAULT_TITLE`: 카드 제목 (미리 채운 값: `활동 기록`). 예: `메모 기록`
    - `DEFAULT_THEME`: 색 테마 (미리 채운 값: `auto`, 노션 라이트/다크 자동). [전체 테마](docs/themes.md)
    - `DEFAULT_FORMAT`, `DEFAULT_TIMEZONE`, `DEFAULT_LOCALE`: 미리 채워져 있으니 그대로 둡니다
@@ -123,9 +127,8 @@ Vercel이 가장 간단합니다. 앱 전체가 `api/index.ts` 함수 하나로 
 3. 환경 변수를 넣습니다. 아래 블록을 복사해 값을 채운 뒤 Vercel 환경 변수 입력칸에 통째로 붙여 넣으면 한 번에 들어갑니다.
 
    ```
-   NOTION_TOKEN=<노션 연결 시크릿>
+   NOTION_TOKEN=<노션 연결의 API 토큰>
    DEFAULT_DATABASE=<데이터베이스 링크>
-   ALLOWED_DATABASES=<데이터베이스 링크>
    DEFAULT_TITLE=활동 기록
    DEFAULT_THEME=auto
    DEFAULT_FORMAT=html
@@ -133,14 +136,25 @@ Vercel이 가장 간단합니다. 앱 전체가 `api/index.ts` 함수 하나로 
    DEFAULT_LOCALE=ko
    ```
 
-   - `ALLOWED_DATABASES`에는 링크나 ID를 쉼표로 구분해 여러 개 넣을 수 있습니다.
+   - `NOTION_TOKEN`은 Type을 **Secret**으로, 나머지는 **Config**로 두면 나중에 값을 다시 보고 고칠 수 있습니다.
    - 다른 옵션도 `DEFAULT_*`로 정할 수 있습니다 ([전체 목록](.env.example)).
 4. 배포한 뒤 `/api/status`에서 토큰이 연결됐는지 확인합니다.
 
 </details>
 
+### 읽을 수 있는 데이터베이스
+
+`DEFAULT_DATABASE`를 넣으면 그 데이터베이스만 읽을 수 있게 자동으로 잠깁니다. 같은 배포로 다른 데이터베이스의 잔디도 만들고 싶으면 `ALLOWED_DATABASES`에 링크나 ID를 쉼표로 구분해 추가하고, 주소에 `?db=<다른 링크>`를 붙입니다.
+
+| `DEFAULT_DATABASE` | `ALLOWED_DATABASES` | 읽을 수 있는 데이터베이스 |
+| :-- | :-- | :-- |
+| 있음 | 비어 있음 | `DEFAULT_DATABASE`만 |
+| 있음 | 링크 목록 | 목록 + `DEFAULT_DATABASE` |
+| 상관없음 | `*` | 연결에 공유된 모든 데이터베이스 |
+| 없음 | 비어 있음 | 연결에 공유된 모든 데이터베이스 |
+
 > [!WARNING]
-> `ALLOWED_DATABASES`를 비워 두면 배포 주소와 통합에 공유된 데이터베이스 ID를 아는 사람은 누구나 그 잔디를 볼 수 있습니다. 제목이나 내용은 나오지 않고 날짜와 개수만 보이지만, 내 활동 기록이라 설정해 두는 걸 권합니다.
+> 모든 데이터베이스를 열어 두면 배포 주소와 데이터베이스 ID를 아는 사람은 누구나 그 잔디를 볼 수 있습니다. 제목이나 내용은 나오지 않고 날짜와 개수만 보이지만, 내 활동 기록이라 잠가 두는 걸 권합니다. 현재 상태는 `/api/status`의 `allowList`에서 확인할 수 있습니다.
 
 오류 카드별 해결 방법은 [docs/deploy.md](docs/deploy.md)에 있습니다.
 
@@ -167,4 +181,4 @@ npx vercel dev
 
 [MIT](LICENSE). 개인 프로젝트이며 Notion Labs나 GitHub와는 관련이 없습니다.
 
-[vercel-deploy]: https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fseonghyeonn%2Fnotion-grass-heatmap-habit-tracker&env=NOTION_TOKEN%2CDEFAULT_DATABASE%2CALLOWED_DATABASES%2CDEFAULT_TITLE%2CDEFAULT_THEME%2CDEFAULT_FORMAT%2CDEFAULT_TIMEZONE%2CDEFAULT_LOCALE&envDefaults=%7B%22DEFAULT_TITLE%22%3A%22%ED%99%9C%EB%8F%99%20%EA%B8%B0%EB%A1%9D%22%2C%22DEFAULT_THEME%22%3A%22auto%22%2C%22DEFAULT_FORMAT%22%3A%22html%22%2C%22DEFAULT_TIMEZONE%22%3A%22Asia%2FSeoul%22%2C%22DEFAULT_LOCALE%22%3A%22ko%22%7D&envDescription=NOTION_TOKEN%3A%20%EB%85%B8%EC%85%98%20%EC%97%B0%EA%B2%B0%20%EC%8B%9C%ED%81%AC%EB%A6%BF.%20DEFAULT_DATABASE%EC%99%80%20ALLOWED_DATABASES%3A%20%EB%8D%B0%EC%9D%B4%ED%84%B0%EB%B2%A0%EC%9D%B4%EC%8A%A4%20%EB%A7%81%ED%81%AC%EB%A5%BC%20%EB%91%98%20%EB%8B%A4%20%EB%B6%99%EC%97%AC%20%EB%84%A3%EA%B8%B0.%20%EB%82%98%EB%A8%B8%EC%A7%80%EB%8A%94%20%EB%AF%B8%EB%A6%AC%20%EC%B1%84%EC%9B%8C%EC%A0%B8%20%EC%9E%88%EA%B3%A0%2C%20%EC%A0%9C%EB%AA%A9%EA%B3%BC%20%ED%85%8C%EB%A7%88%EB%8A%94%20%EC%9B%90%ED%95%98%EB%8A%94%20%EB%8C%80%EB%A1%9C%20%EB%B0%94%EA%BE%B8%EC%84%B8%EC%9A%94.&envLink=https%3A%2F%2Fgithub.com%2Fseonghyeonn%2Fnotion-grass-heatmap-habit-tracker%2Fblob%2Fmain%2Fdocs%2Fdeploy.md&project-name=notion-grass-heatmap
+[vercel-deploy]: https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fseonghyeonn%2Fnotion-grass-heatmap-habit-tracker&env=NOTION_TOKEN%2CDEFAULT_DATABASE%2CDEFAULT_TITLE%2CDEFAULT_THEME%2CDEFAULT_FORMAT%2CDEFAULT_TIMEZONE%2CDEFAULT_LOCALE&envDefaults=%7B%22DEFAULT_TITLE%22%3A%22%ED%99%9C%EB%8F%99%20%EA%B8%B0%EB%A1%9D%22%2C%22DEFAULT_THEME%22%3A%22auto%22%2C%22DEFAULT_FORMAT%22%3A%22html%22%2C%22DEFAULT_TIMEZONE%22%3A%22Asia%2FSeoul%22%2C%22DEFAULT_LOCALE%22%3A%22ko%22%7D&envDescription=NOTION_TOKEN%3A%20%EB%85%B8%EC%85%98%20%EC%97%B0%EA%B2%B0%EC%9D%98%20API%20%ED%86%A0%ED%81%B0.%20DEFAULT_DATABASE%3A%20%EB%8D%B0%EC%9D%B4%ED%84%B0%EB%B2%A0%EC%9D%B4%EC%8A%A4%20%EB%A7%81%ED%81%AC%20%28%EC%9D%B4%20%EB%8D%B0%EC%9D%B4%ED%84%B0%EB%B2%A0%EC%9D%B4%EC%8A%A4%EB%A7%8C%20%EC%9D%BD%EC%9D%84%20%EC%88%98%20%EC%9E%88%EC%96%B4%EC%9A%94%29.%20%EB%82%98%EB%A8%B8%EC%A7%80%EB%8A%94%20%EB%AF%B8%EB%A6%AC%20%EC%B1%84%EC%9B%8C%EC%A0%B8%20%EC%9E%88%EA%B3%A0%2C%20%EC%A0%9C%EB%AA%A9%EA%B3%BC%20%ED%85%8C%EB%A7%88%EB%8A%94%20%EC%9B%90%ED%95%98%EB%8A%94%20%EB%8C%80%EB%A1%9C%20%EB%B0%94%EA%BE%B8%EC%84%B8%EC%9A%94.&envLink=https%3A%2F%2Fgithub.com%2Fseonghyeonn%2Fnotion-grass-heatmap-habit-tracker%2Fblob%2Fmain%2Fdocs%2Fdeploy.md&project-name=notion-grass-heatmap

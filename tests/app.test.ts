@@ -49,6 +49,17 @@ describe("status", () => {
     assert.deepEqual(withoutDb.defaults, []);
   });
 
+  it("describes how the allow-list is set", async () => {
+    const fake = (async () => Response.json({ object: "user" })) as typeof fetch;
+    const label = async (vars: Record<string, string>) =>
+      (await (await createStatusHandler(readEnv({ NOTION_TOKEN: "x", ...vars }), fake)()).json()).allowList;
+    const id = "e4770b9b7c3e4a96b062c3c6f4504e0c";
+    assert.equal(await label({}), "off");
+    assert.equal(await label({ DEFAULT_DATABASE: id }), "default database only");
+    assert.equal(await label({ ALLOWED_DATABASES: id }), "on");
+    assert.equal(await label({ DEFAULT_DATABASE: id, ALLOWED_DATABASES: "*" }), "off");
+  });
+
   it("is unhealthy without a token", async () => {
     const res = await createStatusHandler(readEnv({}))();
     assert.equal(res.status, 503);

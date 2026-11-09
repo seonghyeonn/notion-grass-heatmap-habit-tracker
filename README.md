@@ -46,7 +46,7 @@ There is no public instance. You deploy your own copy to Vercel (free for person
    ```
 
 > [!TIP]
-> Hover the graph in Notion and a gear button appears in the top-right corner. Use it to switch themes on the spot. The choice is saved in that device's browser only, so it doesn't change what others see, and **Default** goes back to the original theme.
+> Hover the graph in Notion and a gear button appears in the bottom-right corner. Use it to switch themes on the spot. The choice is saved in that device's browser only, so it doesn't change what others see, and **Default** goes back to the original theme.
 
 ## Examples
 

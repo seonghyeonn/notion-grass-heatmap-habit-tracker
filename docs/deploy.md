@@ -36,7 +36,7 @@
 `/embed` → paste `https://<app>.vercel.app/api/heatmap` (with `DEFAULT_DATABASE` and `DEFAULT_FORMAT=html` set), or `https://<app>.vercel.app/api/heatmap?db=…&format=html`.
 
 - `format=html` scales to the block and scrolls to the latest week on phones.
-- Hovering the embed shows a gear button in the top-right corner. It lets each viewer switch the theme. The choice is saved in that viewer's browser only (per device), so it never changes what others see. *Default* goes back to the theme set by the URL or `DEFAULT_THEME`.
+- Hovering the embed shows a gear button in the bottom-right corner (away from Notion's own block menu in the top-right). It lets each viewer switch the theme. The choice is saved in that viewer's browser only (per device), so it never changes what others see. *Default* goes back to the theme set by the URL or `DEFAULT_THEME`.
 - `theme=auto` follows the **viewer's operating system** colour scheme, not Notion's own theme switch. If you always use Notion in dark mode, choose `theme=notion-dark` explicitly.
 - Updates appear after `cache_seconds` (default 30 minutes). Lower it for faster refresh at the cost of more Notion requests.
 

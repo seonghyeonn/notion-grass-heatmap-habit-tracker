@@ -75,7 +75,7 @@ const GEAR_ICON =
 const PICKER_CSS = `
 :root{--gp-bg:#ffffff;--gp-fg:#37352f;--gp-line:#0000001f;--gp-hover:#0000000f}
 @media (prefers-color-scheme:dark){:root{--gp-bg:#252525;--gp-fg:#ffffffcf;--gp-line:#ffffff1f;--gp-hover:#ffffff14}}
-.gp-gear{position:absolute;top:4px;right:4px;width:24px;height:24px;padding:0;display:grid;place-items:center;border-radius:50%;border:1px solid var(--gp-line);background:var(--gp-bg);color:var(--gp-fg);cursor:pointer;opacity:0;transition:opacity .15s}
+.gp-gear{position:absolute;bottom:4px;right:4px;width:24px;height:24px;padding:0;display:grid;place-items:center;border-radius:50%;border:1px solid var(--gp-line);background:var(--gp-bg);color:var(--gp-fg);cursor:pointer;opacity:0;transition:opacity .15s}
 body:hover .gp-gear,.gp-gear:focus-visible,.gp-open .gp-gear{opacity:1}
 @media (hover:none){.gp-gear{opacity:.7}}
 .gp-menu{position:fixed;z-index:1;box-sizing:border-box;min-width:220px;overflow:auto;padding:6px;border-radius:10px;border:1px solid var(--gp-line);background:var(--gp-bg);color:var(--gp-fg);box-shadow:0 6px 24px #0000003d;font:12px/1.2 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
@@ -111,8 +111,9 @@ async function show(name){
 function toggle(open){
   menu.hidden=!open;p.classList.toggle("gp-open",open);gear.setAttribute("aria-expanded",String(open));
   if(!open)return;
-  const r=gear.getBoundingClientRect(),top=Math.min(r.bottom+4,Math.max(4,innerHeight-menu.offsetHeight-4));
-  menu.style.top=top+"px";menu.style.right=Math.max(4,innerWidth-r.right)+"px";menu.style.maxHeight=(innerHeight-top-4)+"px";
+  // Opens upward from the gear in the bottom-right corner, staying inside the iframe.
+  const r=gear.getBoundingClientRect(),top=Math.max(4,r.top-menu.offsetHeight-4);
+  menu.style.top=top+"px";menu.style.right=Math.max(4,innerWidth-r.right)+"px";menu.style.maxHeight=(Math.max(r.top,innerHeight-top)-8)+"px";
   (menu.querySelector("[aria-checked=true]")||menu.querySelector("button")).focus();
 }
 gear.addEventListener("click",e=>{e.stopPropagation();toggle(menu.hidden)});

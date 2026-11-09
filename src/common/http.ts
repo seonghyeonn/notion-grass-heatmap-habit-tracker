@@ -6,8 +6,22 @@ const CONTENT_TYPES = {
 
 export type BodyKind = keyof typeof CONTENT_TYPES;
 
-export function cacheControl(seconds: number): string {
-  return `public, max-age=${seconds}, s-maxage=${seconds}, stale-while-revalidate=86400`;
+/** How long a viewer's browser may reuse a response without asking again. */
+const BROWSER_SECONDS = 60;
+
+/**
+ * Browsers keep a response for a minute, so a new deployment shows up almost at once.
+ * The CDN keeps it for `seconds` (and serves it stale while refreshing), which is what
+ * actually saves Notion requests. Vercel reads Vercel-CDN-Cache-Control; other CDNs
+ * read CDN-Cache-Control or s-maxage. Vercel also clears its CDN cache on every deploy.
+ */
+export function cacheHeaders(seconds: number): Record<string, string> {
+  const cdn = `max-age=${seconds}, stale-while-revalidate=86400`;
+  return {
+    "Cache-Control": `public, max-age=${Math.min(BROWSER_SECONDS, seconds)}, s-maxage=${seconds}`,
+    "CDN-Cache-Control": cdn,
+    "Vercel-CDN-Cache-Control": cdn,
+  };
 }
 
 export function respond(
@@ -19,7 +33,7 @@ export function respond(
     status,
     headers: {
       "Content-Type": CONTENT_TYPES[kind],
-      "Cache-Control": cacheSeconds ? cacheControl(cacheSeconds) : "no-store",
+      ...(cacheSeconds ? cacheHeaders(cacheSeconds) : { "Cache-Control": "no-store" }),
       "X-Content-Type-Options": "nosniff",
       ...headers,
     },

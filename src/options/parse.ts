@@ -22,9 +22,18 @@ type Read = (name: string) => string | undefined;
 export function parseOptions(params: URLSearchParams, env: Env): HeatmapOptions {
   const read: Read = (name) => params.get(name)?.trim() || env.defaults[name];
 
-  const rawDb = params.get("db")?.trim() || params.get("database")?.trim() || env.defaults.db;
+  const urlDb = params.get("db")?.trim() || params.get("database")?.trim();
+  const rawDb = urlDb || env.defaults.db;
   if (!rawDb) {
     throw new OptionError("Missing `db` parameter.", "Pass a Notion database ID or URL as ?db=, or set DEFAULT_DATABASE.");
+  }
+  // Notion links never contain commas, so a comma means several databases were pasted.
+  if (rawDb.includes(",")) {
+    const source = urlDb ? "`db`" : "DEFAULT_DATABASE";
+    throw new OptionError(
+      `${source} takes one database, but several were given.`,
+      "Keep one link here. Add the others to ALLOWED_DATABASES and give each its own embed with ?db=<link>.",
+    );
   }
   const databaseId = normalizeNotionId(rawDb);
   if (!databaseId) throw new OptionError("`db` is not a valid Notion ID.", "Copy the database link and paste it as ?db=");

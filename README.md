@@ -143,7 +143,12 @@ Vercel is the easiest option. The whole app is one function in `api/index.ts`.
 
 ### Which databases can be read
 
-Setting `DEFAULT_DATABASE` locks the deployment to that database. To draw other databases from the same deployment, add their links or IDs to `ALLOWED_DATABASES` (comma-separated) and use `?db=<other link>` in the URL.
+`DEFAULT_DATABASE` takes **one** database, and setting it locks the deployment to that database. To draw other databases from the same deployment, add their links or IDs to `ALLOWED_DATABASES` (comma-separated) and give each its own embed with `?db=<other link>&title=<title>`.
+
+```
+DEFAULT_DATABASE=<memo database link>
+ALLOWED_DATABASES=<reading database link>,<workout database link>
+```
 
 | `DEFAULT_DATABASE` | `ALLOWED_DATABASES` | Readable databases |
 | :-- | :-- | :-- |

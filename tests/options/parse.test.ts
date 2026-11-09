@@ -116,6 +116,12 @@ describe("parseOptions", () => {
     assert.deepEqual(o.filters, [{ property: "분야", value: "독서", negate: false }]);
   });
 
+  it("explains when several databases are pasted into one setting", () => {
+    const two = `https://www.notion.so/ws/Memo-${ID}?v=1,https://www.notion.so/ws/Read-0123456789abcdef0123456789abcdef`;
+    assert.throws(() => parseOptions(new URLSearchParams(""), readEnv({ DEFAULT_DATABASE: two })), /DEFAULT_DATABASE takes one database/);
+    assert.throws(() => parse(`db=${encodeURIComponent(two)}`), /`db` takes one database/);
+  });
+
   it("rejects bad environment defaults like bad URL values", () => {
     assert.throws(() => parseOptions(new URLSearchParams(`db=${ID}`), readEnv({ DEFAULT_WEEKS: "99" })), OptionError);
   });

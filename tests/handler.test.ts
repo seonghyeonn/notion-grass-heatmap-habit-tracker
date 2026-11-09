@@ -34,6 +34,15 @@ describe("GET /api/heatmap", () => {
     assert.match(await res.text(), /class="cell l4 today"/);
   });
 
+  it("keeps browsers on a short cache so new deployments show up quickly", async () => {
+    const res = await get(handler(), `db=${ID}&cache_seconds=600&format=html`);
+    const browser = res.headers.get("cache-control") ?? "";
+    assert.match(browser, /(^|\s)max-age=60,/);
+    assert.doesNotMatch(browser, /stale-while-revalidate/, "browsers must not show a stale page first");
+    assert.equal(res.headers.get("vercel-cdn-cache-control"), "max-age=600, stale-while-revalidate=86400");
+    assert.equal(res.headers.get("cdn-cache-control"), "max-age=600, stale-while-revalidate=86400");
+  });
+
   it("wraps in html for embeds", async () => {
     const res = await get(handler(), `db=${ID}&format=html`);
     assert.equal(res.headers.get("content-type"), "text/html; charset=utf-8");

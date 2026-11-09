@@ -22,7 +22,8 @@
 ### How it runs
 
 - `vercel.json` rewrites `/` and `/api/*` to the single function in `api/index.ts`, which routes by path (`/api/heatmap`, `/api/status`). This follows Vercel's guidance for projects without a framework: one function that can be reused across routes.
-- Responses carry `Cache-Control: s-maxage=<cache_seconds>, stale-while-revalidate=86400`, so the CDN serves most views without touching Notion.
+- The CDN keeps each response for `cache_seconds` and serves it stale while refreshing (`Vercel-CDN-Cache-Control` / `CDN-Cache-Control: max-age=<cache_seconds>, stale-while-revalidate=86400`), so most views never touch Notion. Vercel clears this cache on every deployment.
+- Browsers only keep a response for 60 seconds (`Cache-Control: public, max-age=60`), so a new deployment shows up in Notion within a minute.
 - Within one warm instance, identical data queries are memoised for `cache_seconds`, so several embeds of one database with different themes cost one Notion query.
 
 ## Notion side

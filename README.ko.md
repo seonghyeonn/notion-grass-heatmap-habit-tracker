@@ -144,7 +144,12 @@ Vercel이 가장 간단합니다. 앱 전체가 `api/index.ts` 함수 하나로 
 
 ### 읽을 수 있는 데이터베이스
 
-`DEFAULT_DATABASE`를 넣으면 그 데이터베이스만 읽을 수 있게 자동으로 잠깁니다. 같은 배포로 다른 데이터베이스의 잔디도 만들고 싶으면 `ALLOWED_DATABASES`에 링크나 ID를 쉼표로 구분해 추가하고, 주소에 `?db=<다른 링크>`를 붙입니다.
+`DEFAULT_DATABASE`에는 데이터베이스를 **하나만** 넣습니다. 넣으면 그 데이터베이스만 읽을 수 있게 자동으로 잠깁니다. 같은 배포로 다른 데이터베이스의 잔디도 만들고 싶으면 `ALLOWED_DATABASES`에 링크나 ID를 쉼표로 구분해 추가하고, 잔디마다 임베드를 따로 만들어 주소에 `?db=<다른 링크>&title=<제목>`을 붙입니다.
+
+```
+DEFAULT_DATABASE=<메모 DB 링크>
+ALLOWED_DATABASES=<독서 DB 링크>,<운동 DB 링크>
+```
 
 | `DEFAULT_DATABASE` | `ALLOWED_DATABASES` | 읽을 수 있는 데이터베이스 |
 | :-- | :-- | :-- |

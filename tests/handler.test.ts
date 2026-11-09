@@ -77,6 +77,14 @@ describe("GET /api/heatmap", () => {
     assert.match(await res.text(), /Missing `db` parameter/);
   });
 
+  it("draws error cards in the DEFAULT_FORMAT and DEFAULT_LOCALE too", async () => {
+    const h = handler({ NOTION_TOKEN: "x", DEFAULT_DATABASE: `${ID},0123456789abcdef0123456789abcdef`, DEFAULT_FORMAT: "html", DEFAULT_LOCALE: "ko" });
+    const res = await get(h, "");
+    assert.equal(res.headers.get("x-error-status"), "400");
+    assert.equal(res.headers.get("content-type"), "text/html; charset=utf-8");
+    assert.match(await res.text(), /<!doctype html>[\s\S]*잔디를 그리지 못했어요/);
+  });
+
   it("enforces the allow-list", async () => {
     const h = handler({ NOTION_TOKEN: "x", ALLOWED_DATABASES: "11111111111111111111111111111111" });
     const res = await get(h, `db=${ID}`);

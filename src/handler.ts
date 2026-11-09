@@ -59,12 +59,14 @@ export function createHeatmapHandler(overrides: Partial<HandlerDeps> = {}) {
         : respond("svg", svg, { cacheSeconds: options.cacheSeconds });
     } catch (error) {
       if (!(error instanceof AppError)) console.error(error);
-      const locale = (params.get("locale") ?? deps.env.defaultLocale) as Locale;
+      const locale = (params.get("locale")?.trim() || deps.env.defaultLocale) as Locale;
       const card = renderErrorCard(error, messagesFor(locale === "ko" ? "ko" : "en"));
       // 200 so the card still renders inside <img> and Notion embeds; the real status is in a header.
       const status = error instanceof AppError ? error.status : 500;
       const headers = { "X-Error-Status": String(status) };
-      return params.get("format") === "html"
+      // Same lookup as the options parser (URL first, then DEFAULT_FORMAT), which may be what failed.
+      const format = params.get("format")?.trim() || deps.env.defaults.format;
+      return format === "html"
         ? respond("html", renderEmbedPage(card, "Error"), { headers })
         : respond("svg", card, { headers });
     }

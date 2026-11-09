@@ -1,0 +1,31 @@
+{
+  "name": "notion-grass-heatmap-habit-tracker",
+  "version": "0.1.0",
+  "description": "GitHub-style contribution heatmap (grass) for any Notion database. Self-host on Vercel and embed in Notion.",
+  "license": "MIT",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test \"tests/**/*.test.ts\"",
+    "preview": "tsx scripts/preview.ts",
+    "check": "npm run typecheck && npm test"
+  },
+  "keywords": [
+    "notion",
+    "heatmap",
+    "habit-tracker",
+    "contribution-graph",
+    "streak",
+    "widget",
+    "vercel"
+  ],
+  "devDependencies": {
+    "@types/node": "22.10.2",
+    "tsx": "4.19.2",
+    "typescript": "5.7.2"
+  }
+}

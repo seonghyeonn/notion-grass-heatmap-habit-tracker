@@ -1,0 +1,139 @@
+<div align="center">
+  <h1>Notion Grass Heatmap</h1>
+  <p>노션 데이터베이스를 GitHub 잔디처럼 보여 주는 위젯</p>
+
+  <a href="https://github.com/seonghyeonn/notion-grass-heatmap-habit-tracker/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/seonghyeonn/notion-grass-heatmap-habit-tracker/actions/workflows/ci.yml/badge.svg" /></a>
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-blue" /></a>
+  <a href="README.md"><img alt="English" src="https://img.shields.io/badge/lang-English-lightgrey" /></a>
+</div>
+
+<br />
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="examples/notion-dark-ko.svg" />
+  <source media="(prefers-color-scheme: light)" srcset="examples/notion-light-ko.svg" />
+  <img alt="노션 잔디 히트맵" src="examples/notion-light-ko.svg" />
+</picture>
+
+노션에 메모, 독서 기록, 습관 체크를 하고 있는데 실제로 며칠이나 꾸준히 했는지 한눈에 보고 싶었습니다. </br>써 본 습관 위젯들은 위젯 안에서 따로 체크해야 해서 기록을 두 번 하게 되더군요. 이 위젯은 이미 쓰고 있는 데이터베이스를 그대로 읽습니다.
+
+페이지가 만들어진 날이나 원하는 날짜 속성을 기준으로 하루를 셉니다. 기록이 있었는지만 볼 수도 있고, 페이지 개수나 숫자 속성의 합, 체크된 체크박스 수로 진하기를 나눌 수도 있습니다.
+
+공용 서버는 없습니다. 각자 Vercel(개인 용도는 무료)에 배포해서 쓰기 때문에 노션 토큰이 내 계정 밖으로 나가지 않습니다.
+
+## 빠른 설정
+
+1. [notion.so/profile/integrations](https://www.notion.so/profile/integrations)에서 Internal 통합을 만들고 **콘텐츠 읽기** 권한만 켠 뒤 시크릿을 복사합니다.
+2. 노션에서 데이터베이스를 열고 `•••` > 연결(Connections)에서 통합을 추가합니다.
+3. 아래 버튼으로 배포하고, Vercel이 물어보면 `NOTION_TOKEN`에 시크릿을 넣습니다.
+
+   [![Deploy with Vercel](https://vercel.com/button)][vercel-deploy]
+
+4. `https://<내-앱>.vercel.app/api/status`에서 `"ok": true`가 나오는지 확인합니다.
+5. 노션에서 `/embed`를 입력하고 붙여 넣습니다.
+
+   ```
+   https://<내-앱>.vercel.app/api/heatmap?db=<데이터베이스 링크>&format=html&locale=ko&tz=Asia/Seoul
+   ```
+
+> [!TIP]
+> `db`에는 노션에서 복사한 링크를 통째로 넣어도 됩니다. ID를 따로 찾을 필요가 없습니다.
+
+## 예시
+
+```
+# 오늘 메모를 썼는지
+/api/heatmap?db=<id>&tz=Asia/Seoul&locale=ko
+
+# 날짜 속성 기준으로 하루에 읽은 쪽수
+/api/heatmap?db=<id>&date=날짜&mode=sum:읽은 페이지
+
+# 일일 기록의 운동 체크박스, 월요일 시작
+/api/heatmap?db=<id>&date=날짜&mode=checkbox:운동&week_start=mon
+
+# 완료한 작업만
+/api/heatmap?db=<id>&date=완료일&mode=count&filter=상태:완료
+```
+
+## 옵션
+
+필수 옵션은 `db` 하나뿐입니다.
+
+| 파라미터 | 설명 | 예시 |
+| :-- | :-- | :-- |
+| `db` | 데이터베이스 ID 또는 링크 | `https://www.notion.so/...` |
+| `date` | 페이지를 어느 날로 셀지 (기본: `created_time`) | `last_edited_time`, `완독일` |
+| `mode` | 페이지를 어떻게 셀지 (기본: `presence`) | `count`, `sum:읽은 페이지`, `checkbox:운동` |
+| `filter` | `속성:값`과 맞는 페이지만. 값 앞에 `!`를 붙이면 제외. 여러 번 가능 | `상태:완독`, `분야:!소설` |
+| `tz` | 하루를 나누는 시간대 (기본: `UTC`) | `Asia/Seoul` |
+| `weeks` | 보여 줄 주 수, 1~53 (기본: `53`) | `26` |
+| `week_start` | 한 주의 시작 요일 (기본: `sun`) | `mon` |
+| `theme` | 색 테마 (기본: `github`) | `notion-dark`, `auto` [전체 보기](docs/themes.md) |
+| `color` | 색 하나로 진하기 단계를 만듦 | `f2a33a` |
+| `bg`, `border_color`, `title_color`, `text_color`, `empty_color` | 테마 색 하나만 바꾸기 | `191919` |
+| `title` | 카드 제목 (기본: 영어 `Activity`, 한국어 `활동 기록`) | `독서 기록` |
+| `locale` | 라벨과 날짜 형식 (기본: `en`) | `ko` |
+| `cell`, `gap`, `radius` | 칸 크기, 간격, 모서리 둥글기 (px) | `12`, `3`, `6` |
+| `hide_title`, `hide_stats`, `hide_legend`, `hide_labels`, `hide_border` | 카드 일부 숨기기 | `true` |
+| `format` | 이미지용 `svg`, 노션 임베드용 `html` (기본: `svg`) | `html` |
+| `cache_seconds` | CDN 캐시 시간, 300~86400 (기본: `1800`) | `3600` |
+
+테마 색이 먼저 적용되고, 색 옵션을 주면 그 값으로 덮어씁니다. 옵션별 자세한 설명은 [docs/options.md](docs/options.md)에 있습니다.
+
+## 날짜와 연속 기록 계산 방식
+
+각 페이지는 `tz` 시간대 기준으로 하루에 배치됩니다. 시간이 없는 날짜 속성은 적힌 날짜 그대로 씁니다.
+
+`mode=presence`에서는 그날 페이지가 하나라도 있으면 칸이 칠해집니다. `count`, `sum`, `checkbox`에서는 그래프에서 가장 많았던 날을 기준으로 4단계 진하기로 나뉩니다.
+
+최장 연속은 페이지가 하나 이상 있었던 날이 가장 길게 이어진 일수입니다. 현재 연속은 오늘 기록이 있으면 오늘까지, 없으면 어제까지 셉니다. 아침에 아직 아무것도 안 썼다고 0일이 되지 않도록 한 겁니다.
+
+> [!NOTE]
+> 기본 캐시가 30분이라 새 페이지가 반영되기까지 최대 30분 걸릴 수 있습니다. 더 빨리 보고 싶으면 `cache_seconds`를 줄이면 됩니다. 삭제한 페이지는 잔디에서도 사라집니다.
+
+## 직접 배포하기
+
+Vercel이 가장 간단합니다. 앱 전체가 `api/index.ts` 함수 하나로 돌아갑니다.
+
+<details>
+<summary><b>Vercel 배포 단계별 안내</b></summary>
+
+1. 이 저장소를 포크합니다.
+2. [vercel.com/new](https://vercel.com/new)에서 포크한 저장소를 가져옵니다. 프레임워크 설정은 필요 없습니다.
+3. 환경 변수를 넣습니다.
+   - `NOTION_TOKEN`: 통합 시크릿 (필수)
+   - `ALLOWED_DATABASES`: 이 배포가 읽을 수 있는 데이터베이스 ID, 쉼표로 구분 (권장)
+   - `DEFAULT_TIMEZONE`, `DEFAULT_LOCALE`, `DEFAULT_THEME`: 기본값 (선택)
+4. 배포한 뒤 `/api/status`에서 토큰이 연결됐는지 확인합니다.
+
+</details>
+
+> [!WARNING]
+> `ALLOWED_DATABASES`를 비워 두면 배포 주소와 통합에 공유된 데이터베이스 ID를 아는 사람은 누구나 그 잔디를 볼 수 있습니다. 제목이나 내용은 나오지 않고 날짜와 개수만 보이지만, 내 활동 기록이라 설정해 두는 걸 권합니다.
+
+오류 카드별 해결 방법은 [docs/deploy.md](docs/deploy.md)에 있습니다.
+
+## 개발
+
+```bash
+npm install
+npm run check     # 타입 검사, 테스트
+npm run preview   # 가짜 데이터로 examples/*.svg 생성 (노션 연결 불필요)
+npx vercel dev
+```
+
+`src/core`는 날짜와 연속 기록 계산만 하고 외부 호출이 없습니다. `src/sources`가 노션과 통신하고 `src/render`가 SVG를 그립니다. CSV나 구글 시트 같은 다른 데이터를 붙이고 싶으면 `src/sources`에 `ActivitySource`만 구현하면 나머지는 그대로 쓸 수 있습니다.
+
+구조는 [github-readme-stats](https://github.com/anuraghazra/github-readme-stats), [github-readme-streak-stats](https://github.com/DenverCoder1/github-readme-streak-stats), [snk](https://github.com/Platane/snk)를 참고했습니다.
+
+## 기여하기
+
+이슈와 PR은 언제든 환영합니다. 특히 새 테마나 번역이요. PR을 올리기 전에 `npm run check`를 한 번 돌려 주세요. 자세한 내용은 [CONTRIBUTING.md](CONTRIBUTING.md)를 참고해 주세요.
+
+쓸 만하다면 스타를 눌러 주세요. 다른 사람들이 찾는 데 도움이 됩니다.
+
+## 라이선스
+
+[MIT](LICENSE). 개인 프로젝트이며 Notion Labs나 GitHub와는 관련이 없습니다.
+
+[vercel-deploy]: https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fseonghyeonn%2Fnotion-grass-heatmap-habit-tracker&env=NOTION_TOKEN,ALLOWED_DATABASES&envDescription=NOTION_TOKEN%20is%20your%20Notion%20integration%20secret.%20ALLOWED_DATABASES%20is%20optional.&project-name=notion-grass-heatmap

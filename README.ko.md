@@ -173,9 +173,6 @@ npx vercel dev
 ```
 
 `src/core`는 날짜와 연속 기록 계산만 하고 외부 호출이 없습니다. `src/sources`가 노션과 통신하고 `src/render`가 SVG를 그립니다. CSV나 구글 시트 같은 다른 데이터를 붙이고 싶으면 `src/sources`에 `ActivitySource`만 구현하면 나머지는 그대로 쓸 수 있습니다.
-
-구조는 [github-readme-stats](https://github.com/anuraghazra/github-readme-stats), [github-readme-streak-stats](https://github.com/DenverCoder1/github-readme-streak-stats), [snk](https://github.com/Platane/snk)를 참고했습니다.
-
 ## 기여하기
 
 이슈와 PR은 언제든 환영합니다. 특히 새 테마나 번역이요. PR을 올리기 전에 `npm run check`를 한 번 돌려 주세요. 자세한 내용은 [CONTRIBUTING.md](CONTRIBUTING.md)를 참고해 주세요.

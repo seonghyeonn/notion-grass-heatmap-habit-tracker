@@ -172,9 +172,6 @@ npx vercel dev
 ```
 
 `src/core` has the date and streak logic with no I/O, `src/sources` talks to Notion and `src/render` draws the SVG. To read from somewhere else (CSV, Google Sheets…), implement `ActivitySource` in `src/sources` and nothing else needs to change.
-
-The layout borrows from [github-readme-stats](https://github.com/anuraghazra/github-readme-stats), [github-readme-streak-stats](https://github.com/DenverCoder1/github-readme-streak-stats) and [snk](https://github.com/Platane/snk).
-
 ## Contributing
 
 Issues and pull requests are welcome, especially new themes and translations. Please run `npm run check` before opening a PR. See [CONTRIBUTING.md](CONTRIBUTING.md).

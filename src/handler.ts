@@ -48,7 +48,14 @@ export function createHeatmapHandler(overrides: Partial<HandlerDeps> = {}) {
       });
 
       return options.format === "html"
-        ? respond("html", renderEmbedPage(svg, options.title ?? "Heatmap"), { cacheSeconds: options.cacheSeconds })
+        ? respond(
+            "html",
+            renderEmbedPage(svg, options.title ?? "Heatmap", {
+              current: options.theme,
+              labels: messagesFor(options.locale).themePicker,
+            }),
+            { cacheSeconds: options.cacheSeconds },
+          )
         : respond("svg", svg, { cacheSeconds: options.cacheSeconds });
     } catch (error) {
       if (!(error instanceof AppError)) console.error(error);

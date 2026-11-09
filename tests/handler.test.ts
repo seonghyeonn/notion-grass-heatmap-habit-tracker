@@ -40,6 +40,18 @@ describe("GET /api/heatmap", () => {
     assert.match(await res.text(), /<!doctype html>[\s\S]*<svg/);
   });
 
+  it("adds a theme picker to embeds, but not to error cards or plain svg", async () => {
+    const page = await (await get(handler(), `db=${ID}&format=html&locale=ko&theme=ocean`)).text();
+    assert.match(page, /class="gp-gear" aria-label="테마 바꾸기"/);
+    assert.match(page, /data-current="ocean"/);
+    for (const name of ["auto", "github", "notion-dark", "transparent"]) assert.match(page, new RegExp(`data-theme="${name}"`));
+
+    const error = await (await get(handler(), `db=nope&format=html`)).text();
+    assert.doesNotMatch(error, /gp-gear/);
+    const svg = await (await get(handler(), `db=${ID}`)).text();
+    assert.doesNotMatch(svg, /gp-gear/);
+  });
+
   it("memoises identical requests within one instance", async () => {
     const calls = { n: 0 };
     const h = handler({ NOTION_TOKEN: "x" }, calls);

@@ -15,4 +15,6 @@ export interface Messages {
   cellValue: (value: number, mode: ValueMode) => string;
   formatDate: (year: number, month: number, day: number, weekday: number) => string;
   errorTitle: string;
+  /** Theme picker in the Notion embed page. */
+  themePicker: { button: string; heading: string; reset: string };
 }

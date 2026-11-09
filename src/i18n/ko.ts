@@ -20,4 +20,5 @@ export const ko: Messages = {
   },
   formatDate: (year, month, day, weekday) => `${year}년 ${month}월 ${day}일 (${WEEKDAYS[weekday]})`,
   errorTitle: "잔디를 그리지 못했어요",
+  themePicker: { button: "테마 바꾸기", heading: "테마", reset: "기본값" },
 };

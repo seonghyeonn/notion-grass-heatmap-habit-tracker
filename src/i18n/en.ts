@@ -21,4 +21,5 @@ export const en: Messages = {
   },
   formatDate: (year, month, day, weekday) => `${WEEKDAYS[weekday]}, ${MONTHS[month - 1]} ${day}, ${year}`,
   errorTitle: "Could not draw the heatmap",
+  themePicker: { button: "Change theme", heading: "Theme", reset: "Default" },
 };

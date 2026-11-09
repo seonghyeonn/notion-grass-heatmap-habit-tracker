@@ -25,15 +25,18 @@ There is no public instance. You deploy your own copy to Vercel (free for person
 
 1. Create an internal integration at [notion.so/profile/integrations](https://www.notion.so/profile/integrations) with only **Read content** enabled, and copy the secret.
 2. Open your database in Notion, go to `•••` > Connections, and add the integration.
-3. Deploy, and set `NOTION_TOKEN` to the secret when Vercel asks.
+3. Deploy with the button below. When Vercel asks for environment variables:
+   - `NOTION_TOKEN`: the secret from step 1
+   - `DEFAULT_DATABASE`, `ALLOWED_DATABASES`: your database link (the same link in both)
+   - `DEFAULT_FORMAT`, `DEFAULT_TIMEZONE`, `DEFAULT_LOCALE`: prefilled; change the time zone if you like
 
    [![Deploy with Vercel](https://vercel.com/button)][vercel-deploy]
 
 4. Check `https://<your-app>.vercel.app/api/status`. You should see `"ok": true`.
-5. In Notion, type `/embed` and paste:
+5. In Notion, type `/embed` and paste the URL below. Add options to the URL or set them as environment variables.
 
    ```
-   https://<your-app>.vercel.app/api/heatmap?db=<database link>&format=html
+   https://<your-app>.vercel.app/api/heatmap
    ```
 
 > [!TIP]
@@ -114,10 +117,19 @@ Vercel is the easiest option. The whole app is one function in `api/index.ts`.
 
 1. Fork this repository.
 2. Go to [vercel.com/new](https://vercel.com/new) and import the fork. No framework preset is needed.
-3. Add environment variables:
-   - `NOTION_TOKEN`: your integration secret (required)
-   - `ALLOWED_DATABASES`: comma-separated database IDs this deployment may read (recommended)
-   - `DEFAULT_*`: optional defaults for any option, such as `DEFAULT_DATABASE`, `DEFAULT_TIMEZONE`, `DEFAULT_WEEKS` ([list](.env.example))
+3. Add environment variables. Fill in the block below and paste it into Vercel's environment variable field to add them all at once.
+
+   ```
+   NOTION_TOKEN=<Notion connection secret>
+   DEFAULT_DATABASE=<database link>
+   ALLOWED_DATABASES=<database link>
+   DEFAULT_FORMAT=html
+   DEFAULT_TIMEZONE=UTC
+   DEFAULT_LOCALE=en
+   ```
+
+   - `ALLOWED_DATABASES` takes several links or IDs separated by commas.
+   - Any other option can be set with `DEFAULT_*` ([list](.env.example)).
 4. Deploy and open `/api/status` to check the token.
 
 </details>
@@ -150,4 +162,4 @@ If this is useful to you, a star helps other people find it.
 
 [MIT](LICENSE). This is a personal project and is not affiliated with Notion Labs or GitHub.
 
-[vercel-deploy]: https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fseonghyeonn%2Fnotion-grass-heatmap-habit-tracker&env=NOTION_TOKEN,ALLOWED_DATABASES&envDescription=NOTION_TOKEN%20is%20your%20Notion%20integration%20secret.%20ALLOWED_DATABASES%20is%20optional.&project-name=notion-grass-heatmap
+[vercel-deploy]: https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fseonghyeonn%2Fnotion-grass-heatmap-habit-tracker&env=NOTION_TOKEN%2CDEFAULT_DATABASE%2CALLOWED_DATABASES%2CDEFAULT_FORMAT%2CDEFAULT_TIMEZONE%2CDEFAULT_LOCALE&envDefaults=%7B%22DEFAULT_FORMAT%22%3A%22html%22%2C%22DEFAULT_TIMEZONE%22%3A%22UTC%22%2C%22DEFAULT_LOCALE%22%3A%22en%22%7D&envDescription=NOTION_TOKEN%3A%20your%20Notion%20connection%20secret.%20DEFAULT_DATABASE%20and%20ALLOWED_DATABASES%3A%20paste%20your%20database%20link%20into%20both.%20The%20rest%20is%20prefilled.&envLink=https%3A%2F%2Fgithub.com%2Fseonghyeonn%2Fnotion-grass-heatmap-habit-tracker%2Fblob%2Fmain%2Fdocs%2Fdeploy.md&project-name=notion-grass-heatmap

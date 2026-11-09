@@ -25,15 +25,18 @@
 
 1. [notion.so/profile/integrations](https://www.notion.so/profile/integrations)에서 Internal 통합을 만들고 **콘텐츠 읽기** 권한만 켠 뒤 시크릿을 복사합니다.
 2. 노션에서 데이터베이스를 열고 `•••` > 연결(Connections)에서 통합을 추가합니다.
-3. 아래 버튼으로 배포하고, Vercel이 물어보면 `NOTION_TOKEN`에 시크릿을 넣습니다.
+3. 아래 버튼으로 배포합니다. Vercel이 환경 변수를 물어보면 이렇게 넣습니다.
+   - `NOTION_TOKEN`: 1번에서 복사한 시크릿
+   - `DEFAULT_DATABASE`, `ALLOWED_DATABASES`: 데이터베이스 링크 (둘 다 같은 링크)
+   - `DEFAULT_FORMAT`, `DEFAULT_TIMEZONE`, `DEFAULT_LOCALE`: 미리 채워져 있으니 그대로 둡니다
 
    [![Deploy with Vercel](https://vercel.com/button)][vercel-deploy]
 
 4. `https://<내-앱>.vercel.app/api/status`에서 `"ok": true`가 나오는지 확인합니다.
-5. 노션에서 `/embed`를 입력하고 붙여 넣습니다.
+5. 노션에서 `/embed`를 입력하고 붙여 넣습니다. 옵션은 주소 뒤에 붙이거나 환경 변수로 바꿀 수 있습니다.
 
    ```
-   https://<내-앱>.vercel.app/api/heatmap?db=<데이터베이스 링크>&format=html&locale=ko&tz=Asia/Seoul
+   https://<내-앱>.vercel.app/api/heatmap
    ```
 
 > [!TIP]
@@ -115,10 +118,19 @@ Vercel이 가장 간단합니다. 앱 전체가 `api/index.ts` 함수 하나로 
 
 1. 이 저장소를 포크합니다.
 2. [vercel.com/new](https://vercel.com/new)에서 포크한 저장소를 가져옵니다. 프레임워크 설정은 필요 없습니다.
-3. 환경 변수를 넣습니다.
-   - `NOTION_TOKEN`: 통합 시크릿 (필수)
-   - `ALLOWED_DATABASES`: 이 배포가 읽을 수 있는 데이터베이스 ID, 쉼표로 구분 (권장)
-   - `DEFAULT_*`: 모든 옵션의 기본값 (선택). 예: `DEFAULT_DATABASE`, `DEFAULT_TIMEZONE`, `DEFAULT_WEEKS` ([전체 목록](.env.example))
+3. 환경 변수를 넣습니다. 아래 블록을 복사해 값을 채운 뒤 Vercel 환경 변수 입력칸에 통째로 붙여 넣으면 한 번에 들어갑니다.
+
+   ```
+   NOTION_TOKEN=<노션 연결 시크릿>
+   DEFAULT_DATABASE=<데이터베이스 링크>
+   ALLOWED_DATABASES=<데이터베이스 링크>
+   DEFAULT_FORMAT=html
+   DEFAULT_TIMEZONE=Asia/Seoul
+   DEFAULT_LOCALE=ko
+   ```
+
+   - `ALLOWED_DATABASES`에는 링크나 ID를 쉼표로 구분해 여러 개 넣을 수 있습니다.
+   - 다른 옵션도 `DEFAULT_*`로 정할 수 있습니다 ([전체 목록](.env.example)).
 4. 배포한 뒤 `/api/status`에서 토큰이 연결됐는지 확인합니다.
 
 </details>
@@ -151,4 +163,4 @@ npx vercel dev
 
 [MIT](LICENSE). 개인 프로젝트이며 Notion Labs나 GitHub와는 관련이 없습니다.
 
-[vercel-deploy]: https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fseonghyeonn%2Fnotion-grass-heatmap-habit-tracker&env=NOTION_TOKEN,ALLOWED_DATABASES&envDescription=NOTION_TOKEN%20is%20your%20Notion%20integration%20secret.%20ALLOWED_DATABASES%20is%20optional.&project-name=notion-grass-heatmap
+[vercel-deploy]: https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fseonghyeonn%2Fnotion-grass-heatmap-habit-tracker&env=NOTION_TOKEN%2CDEFAULT_DATABASE%2CALLOWED_DATABASES%2CDEFAULT_FORMAT%2CDEFAULT_TIMEZONE%2CDEFAULT_LOCALE&envDefaults=%7B%22DEFAULT_FORMAT%22%3A%22html%22%2C%22DEFAULT_TIMEZONE%22%3A%22Asia%2FSeoul%22%2C%22DEFAULT_LOCALE%22%3A%22ko%22%7D&envDescription=NOTION_TOKEN%3A%20%EB%85%B8%EC%85%98%20%EC%97%B0%EA%B2%B0%20%EC%8B%9C%ED%81%AC%EB%A6%BF.%20DEFAULT_DATABASE%EC%99%80%20ALLOWED_DATABASES%3A%20%EB%8D%B0%EC%9D%B4%ED%84%B0%EB%B2%A0%EC%9D%B4%EC%8A%A4%20%EB%A7%81%ED%81%AC%EB%A5%BC%20%EB%91%98%20%EB%8B%A4%20%EB%B6%99%EC%97%AC%20%EB%84%A3%EA%B8%B0.%20%EB%82%98%EB%A8%B8%EC%A7%80%EB%8A%94%20%EB%AF%B8%EB%A6%AC%20%EC%B1%84%EC%9B%8C%EC%A0%B8%20%EC%9E%88%EC%96%B4%EC%9A%94.&envLink=https%3A%2F%2Fgithub.com%2Fseonghyeonn%2Fnotion-grass-heatmap-habit-tracker%2Fblob%2Fmain%2Fdocs%2Fdeploy.md&project-name=notion-grass-heatmap

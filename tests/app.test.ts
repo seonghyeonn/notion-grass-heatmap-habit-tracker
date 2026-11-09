@@ -36,6 +36,19 @@ describe("status", () => {
     assert.doesNotMatch(text, /ntn_secret/);
   });
 
+  it("explains usage from the defaults without echoing their values", async () => {
+    const fake = (async () => Response.json({ object: "user", name: "grass-bot" })) as typeof fetch;
+    const link = "https://www.notion.so/ws/Memo-e4770b9b7c3e4a96b062c3c6f4504e0c";
+    const withDb = await (await createStatusHandler(readEnv({ NOTION_TOKEN: "x", DEFAULT_DATABASE: link, DEFAULT_WEEKS: "26" }), fake)()).json();
+    assert.match(withDb.usage, /^\/api\/heatmap \(uses DEFAULT_DATABASE/);
+    assert.deepEqual(withDb.defaults, ["DEFAULT_DATABASE", "DEFAULT_WEEKS"]);
+    assert.doesNotMatch(JSON.stringify(withDb), /e4770b9b/);
+
+    const withoutDb = await (await createStatusHandler(readEnv({ NOTION_TOKEN: "x" }), fake)()).json();
+    assert.match(withoutDb.usage, /\?db=.*DEFAULT_DATABASE/);
+    assert.deepEqual(withoutDb.defaults, []);
+  });
+
   it("is unhealthy without a token", async () => {
     const res = await createStatusHandler(readEnv({}))();
     assert.equal(res.status, 503);
